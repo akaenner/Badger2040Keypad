@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pin Mapper</title>
+    <link rel="stylesheet" href="lib/picosplit/js/style.css">
+    <script type="text/javascript" src="keypositions.js"></script>
+    <script type="text/javascript" src="lib/picosplit/js/paper-full.min.js"></script>
+    <script type="text/javascript" src="lib/picosplit/js/papaparse.min.js"></script>
+    <script type="text/paperscript" canvas="canvas">    
+	
+	(function(a,b){if("function"==typeof define&&define.amd)define([],b);else if("undefined"!=typeof exports)b();else{b(),a.FileSaver={exports:{}}.exports}})(this,function(){"use strict";function b(a,b){return"undefined"==typeof b?b={autoBom:!1}:"object"!=typeof b&&(console.warn("Deprecated: Expected third argument to be a object"),b={autoBom:!b}),b.autoBom&&/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(a.type)?new Blob(["\uFEFF",a],{type:a.type}):a}function c(a,b,c){var d=new XMLHttpRequest;d.open("GET",a),d.responseType="blob",d.onload=function(){g(d.response,b,c)},d.onerror=function(){console.error("could not download file")},d.send()}function d(a){var b=new XMLHttpRequest;b.open("HEAD",a,!1);try{b.send()}catch(a){}return 200<=b.status&&299>=b.status}function e(a){try{a.dispatchEvent(new MouseEvent("click"))}catch(c){var b=document.createEvent("MouseEvents");b.initMouseEvent("click",!0,!0,window,0,0,0,80,20,!1,!1,!1,!1,0,null),a.dispatchEvent(b)}}var f="object"==typeof window&&window.window===window?window:"object"==typeof self&&self.self===self?self:"object"==typeof global&&global.global===global?global:void 0,a=/Macintosh/.test(navigator.userAgent)&&/AppleWebKit/.test(navigator.userAgent)&&!/Safari/.test(navigator.userAgent),g=f.saveAs||("object"!=typeof window||window!==f?function(){}:"download"in HTMLAnchorElement.prototype&&!a?function(b,g,h){var i=f.URL||f.webkitURL,j=document.createElement("a");g=g||b.name||"download",j.download=g,j.rel="noopener","string"==typeof b?(j.href=b,j.origin===location.origin?e(j):d(j.href)?c(b,g,h):e(j,j.target="_blank")):(j.href=i.createObjectURL(b),setTimeout(function(){i.revokeObjectURL(j.href)},4E4),setTimeout(function(){e(j)},0))}:"msSaveOrOpenBlob"in navigator?function(f,g,h){if(g=g||f.name||"download","string"!=typeof f)navigator.msSaveOrOpenBlob(b(f,h),g);else if(d(f))c(f,g,h);else{var i=document.createElement("a");i.href=f,i.target="_blank",setTimeout(function(){e(i)})}}:function(b,d,e,g){if(g=g||open("","_blank"),g&&(g.document.title=g.document.body.innerText="downloading..."),"string"==typeof b)return c(b,d,e);var h="application/octet-stream"===b.type,i=/constructor/i.test(f.HTMLElement)||f.safari,j=/CriOS\/[\d]+/.test(navigator.userAgent);if((j||h&&i||a)&&"undefined"!=typeof FileReader){var k=new FileReader;k.onloadend=function(){var a=k.result;a=j?a:a.replace(/^data:[^;]*;/,"data:attachment/file;"),g?g.location.href=a:location=a,g=null},k.readAsDataURL(b)}else{var l=f.URL||f.webkitURL,m=l.createObjectURL(b);g?g.location=m:location.href=m,g=null,setTimeout(function(){l.revokeObjectURL(m)},4E4)}});f.saveAs=g.saveAs=g,"undefined"!=typeof module&&(module.exports=g)});
+
+	function newButton(text){
+		var textShape = new PointText({
+			point: [0, 0],
+			content: text,
+			fillColor: 'Black',
+			fontSize: 16
+		});
+		var bg = new Shape.Rectangle(textShape.bounds.expand(25, 10), new Size(10, 10))
+		var isEnabled = true
+		
+		bg.strokeWidth = 1.0
+		bg.shadowColor = 'Gray'
+		bg.shadowBlur = 3
+		
+		var button = new Group([bg, textShape])
+		button.setActive = function (active){
+			if(active){
+				bg.fillColor = '#3498DB'
+				bg.strokeColor = '#1F618D'
+				textShape.fillColor = 'White'	
+				bg.shadowOffset = new Point(0, 1)
+			}else{
+				bg.fillColor = '#FDFEFE'
+				bg.strokeColor = 'LightGray'
+				textShape.fillColor = 'Black'			
+				bg.shadowOffset = new Point(0, 1.25)
+			}
+		}
+		button.setActive(false)
+		
+		button.refreshState = function() {
+			this.setActive(window.event.buttons != 0 && this.isMouseInside)
+		}
+		
+		button.onMouseDown = function(event){
+			if(isEnabled)
+				this.refreshState()
+		}
+		button.onMouseUp = function(event){
+			if(isEnabled)
+				this.refreshState()
+		}
+		
+		button.onMouseEnter = function(event){
+			this.isMouseInside = true
+			this.refreshState()
+		}
+		
+		button.onMouseLeave = function(event){
+			this.isMouseInside = false
+			this.refreshState()
+		}
+			
+		button.setEnabled = function(enabled){
+			isEnabled = enabled
+			bg.opacity = enabled ? 1.0 : 0.3
+			textShape.opacity = bg.opacity
+		}
+		return button
+	}
+	
+	function newRectShape(size, cornerSize, strokeColor, strokeWidth, fillColor) {	
+		var rect = new Rectangle(0, 0, size, size)
+		var shape = new Shape.Rectangle(rect, new Size(cornerSize, cornerSize))
+		shape.strokeColor = strokeColor
+		shape.strokeWidth = strokeWidth
+		shape.fillColor = fillColor
+		return shape
+	}
+	
+	function makeKey(number, keySize, centerX, centerY, angle, fixed) {
+		
+		var outerStrokeColor = fixed ? 'LightGray' : 'Black'
+		var outerFillColor = fixed ? 'White' : '#D0D3D4'
+		var innerStrokeColor = fixed ? 'LightGray' : 'Gray'
+		
+		// Outer rect
+		var shape1 = newRectShape(keySize, 1, outerStrokeColor , 0.3, outerFillColor)
+
+		// Inner rect
+		var inset = 4.0
+		var innerRectSize = keySize - inset;
+		var shape2 = newRectShape(innerRectSize, 3, innerStrokeColor, 0.2, '#FDFEFE')
+		shape2.position += inset / 2.0 
+		shape2.position += new Point(0,-0.75)
+		
+		// Virtual number of the key
+		var p = shape2.bounds.center - new Point(4.0, 3.5)
+		var text = new PointText(p)
+		text.fontSize = 3
+		text.content = number
+		text.fillColor = 'LightGray'
+		text.justification = 'center'
+		
+		// Hardware number of the key
+		var p2 = shape2.bounds.center - new Point(0, -3.5)
+		var hwText = new PointText(p2)
+		hwText.fontSize = 7
+		hwText.content = number
+		hwText.fillColor = 'Black'
+		hwText.justification = 'center'
+		hwText.visible = false
+		
+		var key = new Group(shape1, shape2, text, hwText)
+		key.rotation = angle
+		key.number = number
+		key.position = new Point(centerX, centerY)
+				
+		key.setActive =	function(active){
+			this.children[0].fillColor = active ? '#C1E5FD' : outerFillColor 
+			this.children[0].strokeColor = active ? '#6A808E' : outerStrokeColor
+		}
+	
+		key.setHardwareNumber = function(number){
+			key.hardwareNumber = number
+			var isNumber = typeof(number) == 'number'
+			this.children[3].visible = isNumber
+			this.children[3].content = isNumber ? number : ''
+		}	
+		key.fixed = fixed
+		return key;
+	}
+	
+	function makeKeyboard(csv){
+		var keys = []
+		var noneFixedKeys = []
+		var keySize = 18.3
+		csv.data.sort(function(a, b) {
+			  return parseInt(a[0]) > parseInt(b[0]) ? 1 : -1
+			})
+		console.log(csv.data)
+		csv.data.forEach(function (item, index) {
+			var key = makeKey(item[0], keySize, item[1], -item[2], item[3], item[4])
+			keys.push(key)
+			if (!key.fixed)
+				noneFixedKeys.push(key)
+		});
+		var keyboard = new Group(keys);
+		keyboard.noneFixedKeys = noneFixedKeys
+		keyboard.selectKey = function(key) {
+			this.selectedKey = key
+			this.noneFixedKeys.forEach(function (iKey, index) {
+				iKey.setActive(key.number == iKey.number)
+			});
+		}
+		keyboard.selectNextKey = function(){
+			var index = this.noneFixedKeys.indexOf(this.selectedKey) + 1
+			if(index > this.noneFixedKeys.length-1)
+				index = 0
+			this.selectKey(this.noneFixedKeys[index])
+		}
+        keyboard.noneFixedKeys.forEach(function (key, index) {
+			if (!key.fixed) {
+				key.onClick = function(event) {
+					keyboard.selectKey(this)
+					 return false
+				}	
+			}
+		});
+		
+		keyboard.mapping = function () {
+			var mapping = []
+			var hasMissingValues = false
+			keyboard.noneFixedKeys.forEach(function (iKey, index) {
+				if(isNaN(iKey.hardwareNumber))
+					hasMissingValues = true
+				mapping.push([iKey.number, iKey.hardwareNumber])
+			});
+			if(hasMissingValues)
+				return ''
+			return Papa.unparse(mapping)
+		}	
+			
+		return keyboard
+	}
+	
+	function updateScaleAndPosition(kb, saveButton, helpButton) {
+		var padding = 30
+		var bottomMargin = 40
+		var w = kb.strokeBounds.width;
+		var h = kb.strokeBounds.height;
+		var scaleX = (view.size.width-padding*2) / w;
+		var scaleY = (view.size.height-padding*2-bottomMargin) / h;
+		kb.scaling = Math.min(scaleX, scaleY)
+		var w = kb.strokeBounds.width;
+		var h = kb.strokeBounds.height;
+		kb.position = view.center + new Point(0, -view.center.y + h/2.0 + padding)
+		
+		helpButton.position = new Point(kb.bounds.center.x+saveButton.bounds.width/2.0+30, kb.bounds.bottomCenter.y+helpButton.bounds.height+10)
+		saveButton.position = new Point(kb.bounds.center.x , kb.bounds.bottomCenter.y+saveButton.bounds.height+10)
+	}
+	
+	// Parse the key positions from keypositions.js
+	var csv = Papa.parse(keypositions, {
+		dynamicTyping: true,
+		skipEmptyLines: true
+	});
+
+	// Help button
+	var helpButton = newButton('?') 
+	helpButton.onClick = function(event){
+		alert('Press the key on your keyboard that is highlighted in blue here. Then the next key is highlighted. Continue until you have pressed all the keys. You can always select a key with the mouse to change incorrect entries. When you have pressed all the keys, click the "Download" button to save a mapping.js file in your downloads folder. Copy this file to your keyboard. Afterwards your keyboard uses the layout that is defined in layout.js.')
+	}
+	
+	// Save button
+	var saveButton = newButton('Download') 
+	saveButton.setEnabled(false)
+	
+	// Keyboard
+	var keyboard = makeKeyboard(csv)
+	keyboard.selectKey(keyboard.children[0])
+	updateScaleAndPosition(keyboard, saveButton, helpButton)
+	view.onResize = function(event) {
+		updateScaleAndPosition(keyboard, saveButton, helpButton)
+	}
+	
+	saveButton.onClick = function(event){
+		var csv = keyboard.mapping()
+		if(csv.length == 0)
+			return
+		var mapping = 'var mapping = `\r\n' + csv + '\r\n`' 		
+		var myFile = new File([mapping], "mapping.js", {type: "text/plain;charset=utf-8"});
+		saveAs(myFile);
+	}
+
+	var digits = ''
+	tool.onKeyUp = function(event) {
+		var key = event.key
+		if(key == 'enter' && digits.length > 0){
+			var num = parseInt(digits, 10)
+			keyboard.selectedKey.setHardwareNumber(num)
+			keyboard.selectNextKey()
+			digits = ''
+			if(keyboard.mapping().length > 0)
+				saveButton.setEnabled(true)
+		} else if(!isNaN(parseInt(key, 10)))
+			digits += key
+	}
+	
+    </script>
+</head>
+<body>
+    <canvas id="canvas" resize style="background:white" data-paper-hidpi="on"></canvas>
+</body>
+</html>
