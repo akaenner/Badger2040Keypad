@@ -33,6 +33,7 @@ while True:
 			break
 		except Exception as e:
 			time.sleep(1)
+			print(e)
 		gc.collect()
 
 		try:

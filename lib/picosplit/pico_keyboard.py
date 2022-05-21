@@ -138,7 +138,7 @@ class PicoKeyboard:
         if self.emitHardwareKeyNumbers:
             if state == Key.UP:
                 self.hid_keyboard_layout.write(f"{button_index}\n")
-                print("emit: ", button_index)
+                # print("emit: ", button_index)
             return
             
         # Make sure that the key which started to handle a button down event always handles the following button up event.

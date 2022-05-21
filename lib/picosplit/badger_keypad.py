@@ -37,11 +37,12 @@ class BadgerKeypad(Keypad):
                 self.mcp_key_pins.append(self.debounced_pin(self.mcp.get_pin(i), False))
             
             # Predefined actions for on board switches
-            self.fixed_keys = {0:Key(tap=PreviousLayout()),  # SW_A
-                               1:Key(tap=NextLayout()),      # SW_B
-                               2:Key(tap=SpecialAction()),   # SW_C
-                               3:Key(tap=PreviousLayer()),   # SW_DOWN
-                               4:Key(tap=NextLayer())}       # SW_UP
+            # self.fixed_keys = {0:Key(tap=PreviousLayout()),  # SW_A
+            #                    1:Key(tap=NextLayout()),      # SW_B
+            #                    2:Key(tap=SpecialAction()),   # SW_C
+            #                    3:Key(tap=PreviousLayer()),   # SW_DOWN
+            #                    4:Key(tap=NextLayer())}       # SW_UP
+            self.fixed_keys = {}
         else:
             self.last_i2c_check_time = time.monotonic()
     

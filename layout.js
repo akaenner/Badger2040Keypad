@@ -23,6 +23,9 @@ title=Base
  10 : tap=Sequence[ Codes[ ESCAPE ] ; Text[ PrevViewport ] ; Codes[ ENTER ] ] : title=Previous\nViewport
  11 : tap=Sequence[ Codes[ ESCAPE ] ; Text[ NextViewport ] ; Codes[ ENTER ] ] : title=Next\nViewport
 
+layer
+title=Other
+  1 : tap=PreviousLayout
   
 layout
 title=Number Pad

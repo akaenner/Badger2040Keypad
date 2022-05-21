@@ -23,7 +23,7 @@
 # THE SOFTWARE.
 
 from digitalio import DigitalInOut, Direction, Pull
-import busio
+
 import board
 import usb_hid 
 import usb_midi

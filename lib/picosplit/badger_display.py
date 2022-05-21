@@ -95,7 +95,7 @@ class BadgerDisplay:
         self.add_labels_for_key(keyboard, 4, x + 2 * block_width, y - block_height, block_width, block_height, self.font, self.palette[0], group)
         self.add_labels_for_key(keyboard, 5, x + 2 * block_width, y - 2 * block_height, block_width, block_height, self.font, self.palette[0], group)
 
-        self.add_left_line(group)
+        # self.add_left_line(group)
 
         # Show the group and refresh the screen to see the result
         display.show(group)
@@ -139,7 +139,7 @@ class BadgerDisplay:
             y = y + button_height + button_padding
 
         self.add_layout_and_layer(keyboard, group)
-        self.add_left_line(group)
+        # self.add_left_line(group)
         
         # Show the group and refresh the screen to see the result
         self.display.show(group)

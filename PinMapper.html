@@ -81,11 +81,11 @@
 		return shape
 	}
 	
-	function makeKey(number, keySize, centerX, centerY, angle, fixed) {
+	function makeKey(number, keySize, centerX, centerY, angle, fixedHardwarKey) {
 		
-		var outerStrokeColor = fixed ? 'LightGray' : 'Black'
-		var outerFillColor = fixed ? 'White' : '#D0D3D4'
-		var innerStrokeColor = fixed ? 'LightGray' : 'Gray'
+		var outerStrokeColor = fixedHardwarKey ? 'LightGray' : 'Black'
+		var outerFillColor = fixedHardwarKey ? 'White' : '#D0D3D4'
+		var innerStrokeColor = fixedHardwarKey ? 'LightGray' : 'Gray'
 		
 		// Outer rect
 		var shape1 = newRectShape(keySize, 1, outerStrokeColor , 0.3, outerFillColor)
@@ -110,7 +110,7 @@
 		var hwText = new PointText(p2)
 		hwText.fontSize = 7
 		hwText.content = number
-		hwText.fillColor = 'Black'
+		hwText.fillColor = fixedHardwarKey ? 'LightGray' : 'Black'
 		hwText.justification = 'center'
 		hwText.visible = false
 		
@@ -130,7 +130,9 @@
 			this.children[3].visible = isNumber
 			this.children[3].content = isNumber ? number : ''
 		}	
-		key.fixed = fixed
+		key.fixed = fixedHardwarKey ? true : false
+		if(key.fixed)
+			key.setHardwareNumber(fixedHardwarKey)
 		return key;
 	}
 	
@@ -149,6 +151,7 @@
 				noneFixedKeys.push(key)
 		});
 		var keyboard = new Group(keys);
+		keyboard.keys = keys
 		keyboard.noneFixedKeys = noneFixedKeys
 		keyboard.selectKey = function(key) {
 			this.selectedKey = key
@@ -174,7 +177,7 @@
 		keyboard.mapping = function () {
 			var mapping = []
 			var hasMissingValues = false
-			keyboard.noneFixedKeys.forEach(function (iKey, index) {
+			keyboard.keys.forEach(function (iKey, index) {
 				if(isNaN(iKey.hardwareNumber))
 					hasMissingValues = true
 				mapping.push([iKey.number, iKey.hardwareNumber])
@@ -244,6 +247,7 @@
 			keyboard.selectedKey.setHardwareNumber(num)
 			keyboard.selectNextKey()
 			digits = ''
+			console.log(keyboard.mapping())
 			if(keyboard.mapping().length > 0)
 				saveButton.setEnabled(true)
 		} else if(!isNaN(parseInt(key, 10)))
