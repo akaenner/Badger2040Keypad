@@ -83,9 +83,10 @@
 	
 	function makeKey(number, keySize, centerX, centerY, angle, fixedHardwarKey) {
 		
-		var outerStrokeColor = fixedHardwarKey ? 'LightGray' : 'Black'
-		var outerFillColor = fixedHardwarKey ? 'White' : '#D0D3D4'
-		var innerStrokeColor = fixedHardwarKey ? 'LightGray' : 'Gray'
+		var isFixed = fixedHardwarKey != null 
+		var outerStrokeColor = isFixed ? 'LightGray' : 'Black'
+		var outerFillColor = isFixed ? 'White' : '#D0D3D4'
+		var innerStrokeColor = isFixed ? 'LightGray' : 'Gray'
 		
 		// Outer rect
 		var shape1 = newRectShape(keySize, 1, outerStrokeColor , 0.3, outerFillColor)
@@ -110,7 +111,7 @@
 		var hwText = new PointText(p2)
 		hwText.fontSize = 7
 		hwText.content = number
-		hwText.fillColor = fixedHardwarKey ? 'LightGray' : 'Black'
+		hwText.fillColor = isFixed ? 'LightGray' : 'Black'
 		hwText.justification = 'center'
 		hwText.visible = false
 		
@@ -130,8 +131,8 @@
 			this.children[3].visible = isNumber
 			this.children[3].content = isNumber ? number : ''
 		}	
-		key.fixed = fixedHardwarKey ? true : false
-		if(key.fixed)
+		key.fixed = isFixed 
+		if(isFixed)
 			key.setHardwareNumber(fixedHardwarKey)
 		return key;
 	}
@@ -224,7 +225,7 @@
 	
 	// Keyboard
 	var keyboard = makeKeyboard(csv)
-	keyboard.selectKey(keyboard.children[0])
+	keyboard.selectKey(keyboard.noneFixedKeys[0])
 	updateScaleAndPosition(keyboard, saveButton, helpButton)
 	view.onResize = function(event) {
 		updateScaleAndPosition(keyboard, saveButton, helpButton)
