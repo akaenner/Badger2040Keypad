@@ -39,11 +39,11 @@ The numbers you see when doing the quick function test are hardware key numbers.
 
 The mapping from hardware key numbers to layout key numbers cannot be done automatically, because the system does not know how the keys are wired. But there is a tool for this task. Open the file **PinMapper.html** in a web browser and you will see the following page:
 
-![Image](badger-pin-mapper_a.jpg)
+![Image](badger-pin-mapper_a.jpg?raw=true)
 
 These are all the keys on the Badger 2040 when it is attached to the keypad module. The small number in the top left corner is the key number which is used inside the layout definition file (**layout.js**). The grayed-out keys built in to the badge have a fixed mapping that cannot be changed. They are displayed for reference purposes only. To map the hardware key numbers to the numbers used in layout.js, press the key on your keypad that is highlighted in blue. 
 
-![Image](badger-pin-mapper_b.jpg)
+![Image](badger-pin-mapper_b.jpg?raw=true)
 
 The recorded hardware key number is now visible at the center of the key (**12**). Then the next key is highlighted. Continue until you have pressed all the keys. You can always select a key with the mouse to change incorrect entries. When you have pressed all the keys, click the *Download* button. This will save a **mapping.js** file in your downloads folder. Copy this file to your keyboard. 
 
