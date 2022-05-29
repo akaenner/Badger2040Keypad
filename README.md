@@ -22,7 +22,7 @@ The Badger 2040 Keypad firmware is based on CircuitPython version 7.3. Previous 
 
 1. Connect the badge with a USB cable to your computer. 
 2. A USB memory drive with the name CIRCUITPY appears inside the Finder (macOS) or Explorer (Windows).
-3. Copy the files and folders inside the CIRCUITPY folder in this repository to that drive.
+3. Copy the files and folders inside the CIRCUITPY folder from this repository to that drive.
 
 ! If you do not want to use an external keypad module skip 'Keypad module setup’ and ‘Mapping hardware keys'.
 
