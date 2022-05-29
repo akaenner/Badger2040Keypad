@@ -2,9 +2,9 @@
 
 ![Image](https://kaenner.de/keypad.jpg)
 
-Turn the Badger 2040 E Ink display into a programmable and extensible Macro Keypad using CircuitPython. The firmware for the Badger 2040 keypad is a derivative of my PicoSplit firmware. This firmware certainly has fewer features than some other firmware, but it comes with everything for configuration. You don't need to install any additional software on your computer. A simple text editor and a web browser is all you need. I provide the firmware for free under the **MIT license**. 
+Turn the Badger 2040 E Ink display into a programmable and extensible Macro Keypad using CircuitPython. The firmware for the Badger 2040 keypad is a derivative of my PicoSplit firmware. You don't need to install any additional software on your computer. A simple text editor and a web browser is all you need. I provide the firmware for free under the **MIT license**. 
 
-You will find step by step instructions for building the keypad extension for the Badger 2040 on my webpage.
+You will find step by step instructions for building the keypad extension for the Badger 2040 on my webpage:
 https://kaenner.de/badger-2040-keypad
 
 ## Firmware features
@@ -22,7 +22,7 @@ The Badger 2040 Keypad firmware is based on CircuitPython version 7.3. Previous 
 
 1. Connect the badge with a USB cable to your computer. 
 2. A USB memory drive with the name CIRCUITPY appears inside the Finder (macOS) or Explorer (Windows).
-3. Copy the files and folders of this repository to that drive.
+3. Copy the files and folders inside the CIRCUITPY folder in this repository to that drive.
 
 ! If you do not want to use an external keypad module skip 'Keypad module setup’ and ‘Mapping hardware keys'.
 
