@@ -153,7 +153,7 @@ class BadgerDisplay:
             self.add_button_labels(labels, x, y, width, height, font, color, group)
 
     def labels_for_key(self, keyboard, key_index):
-        key = keyboard.key_for_button(keyboard.logicalToRealKey.get(key_index))
+        key = keyboard.key_for_button(keyboard.logicalToRealKey.get(key_index), False)
         if key and len(key.description_lines) > 0:
             return key.description_lines
         return None

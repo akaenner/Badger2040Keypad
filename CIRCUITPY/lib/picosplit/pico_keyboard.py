@@ -52,6 +52,10 @@ class PicoKeyboard:
         # Configuration
         self.keypad = keypad
         self.layouts = layouts         
+        self.layout_index_by_title = {}
+        for index, layout in enumerate(layouts):
+            self.layout_index_by_title[layout.title] = index
+
         self.use_layout_at_index(0) # TODO: Load from preferences. If the stored layout no longer exists, use the first layout.
         self.long_tap_timeout = long_tap_timeout
         self.tap_timeout = tap_timeout
@@ -122,11 +126,13 @@ class PicoKeyboard:
         """
         self.active_layer_index = layer_index
 
-    def switch_to_layer_with_title(self, title):
+    def change_to_layer_with_title(self, title):
         """
         The next button down event fetches a key from the layer with the given title.
         """
-        self.active_layer_index = self.layout.layer_index_by_title[title]
+        index = self.layout.layer_index_by_title.get([title], -1)
+        if index != -1:
+            self.active_layer_index = index
 
     def key_state_changed(self, button_index, state):
         """
@@ -134,7 +140,7 @@ class PicoKeyboard:
         Possible state values are Key.DOWN, Key.LONG_DOWN, Key.LONG_PRESS or Key.UP
         """
 
-    	# Usually if no mapping.js file is present, the keyboard emits hardware key numbers.
+        # Usually if no mapping.js file is present, the keyboard emits hardware key numbers.
         if self.emitHardwareKeyNumbers:
             if state == Key.UP:
                 self.hid_keyboard_layout.write(f"{button_index}\n")
@@ -155,17 +161,24 @@ class PicoKeyboard:
             elif state == Key.UP:   
                 self.active_keys.pop(button_index)
 
-    def key_for_button(self, button_index):
-        key = self.active_keys[button_index] if button_index in self.active_keys else None
+    def key_for_button(self, button_index, with_active_keys = True):
+        key = None
+        if with_active_keys:
+            key = self.active_keys[button_index] if button_index in self.active_keys else None
         if not key:
             key = self.layout.get_key(button_index, self.active_layer_index)
-        # Fall back to the base layer if we did not find any key
-        if not key:
+        # Fall back to the base layer if we did not find any key and if fallthrough == True
+        if not key and self.layout.get_layer_at_index(self.active_layer_index).fallthrough:
             key = self.layout.get_key(button_index, 0)
         return key
 
     # Layout
-            
+    
+    def use_layout_with_name(self, name):
+        index = self.layout_index_by_title.get(name, -1)
+        if index != -1:
+            self.use_layout_at_index(index)    
+        
     def use_layout_at_index(self, index):
         length = len(self.layouts)
         if length == 0:
@@ -192,6 +205,11 @@ class PicoKeyboard:
         self.use_layout_at_index(newIndex)
 
     # Layers
+
+    def use_layer_with_name(self, name):
+        index = self.layout.layer_index_by_title.get(name, -1)
+        if index != -1:
+            self.use_layer_at_index(index)    
 
     def use_layer_at_index(self, index):
         if not self.layout:
@@ -250,9 +268,10 @@ class Layout:
         return self.get_layer_at_index(self.layer_index_by_title(title))
 
 class Layer:
-    def __init__(self, title, keys):
+    def __init__(self, title, keys, fallthrough):
         self.title = title
         self.keys = keys
+        self.fallthrough = fallthrough
     
     def get_key_at_index(self, key_index): 
         return self.keys[key_index] if key_index in self.keys else None
@@ -399,11 +418,27 @@ class ChangeLayer(Action):
 
     def on_key_down(self, key, controller):
         self.previous_layer_index = controller.active_layer_index
-        controller.switch_to_layer_with_title(self.layer_title)
+        controller.change_to_layer_with_title(self.layer_title)
 
     def on_key_up(self, key, controller):
         controller.switch_to_layer_with_index(self.previous_layer_index)
-              
+
+class SwitchLayer(Action):
+        def __init__(self, layer_title):
+            super().__init__()
+            self.layer_title = layer_title
+        
+        def on_key_up(self, key, controller):
+            controller.use_layer_with_name(self.layer_title)
+
+class SwitchLayout(Action):
+        def __init__(self, layout_title):
+            super().__init__()
+            self.layout_title = layout_title
+        
+        def on_key_up(self, key, controller):
+            controller.use_layout_with_name(self.layout_title)
+          
 class ResetKeyboard(Action):    
     def on_key_down(self, key, controller):
         microcontroller.reset()

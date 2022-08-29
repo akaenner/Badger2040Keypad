@@ -49,6 +49,10 @@ class ConfigLoader:
     parts = [part.strip() for part in text.split(separator)]
     if len(parts) == 2:
         value = parts[1]
+        if value == 'True':
+          value = True
+        elif value == 'False':
+          value = False
         return parts[0], value
     return None, None
     
@@ -128,6 +132,18 @@ class ConfigLoader:
       return None
     return ChangeLayer(layer_title)
 
+  def parse_switch_layer_action(self, text):
+    layer_title = self.text_between(text, '(', ')')
+    if not layer_title:
+      return None
+    return SwitchLayer(layer_title)
+
+  def parse_switch_layout_action(self, text):
+    layout_title = self.text_between(text, '(', ')')
+    if not layout_title:
+      return None
+    return SwitchLayout(layout_title)
+
   def parse_action(self, text):
     if text == 'Shift':
       return Autoshift()
@@ -139,6 +155,10 @@ class ConfigLoader:
       return self.parse_text_action(text)
     elif text.startswith('ChangeLayer'):
       return self.parse_change_layer_action(text)
+    elif text.startswith('SwitchLayer'):
+      return self.parse_switch_layer_action(text)
+    elif text.startswith('SwitchLayout'):
+      return self.parse_switch_layout_action(text)
     elif text.startswith('ResetKeyboard'):
       return ResetKeyboard()
     elif text.startswith('NextLayout'):
@@ -182,6 +202,7 @@ class ConfigLoader:
     
   def parse_layer(self, file):
     properties = {'keys':dict(self.fixed_keys)}
+    properties['fallthrough'] = False
     def handler(line):
       if ':' in line:
           num, tap, long_tap, hold, description = self.parse_key(line)
@@ -191,9 +212,8 @@ class ConfigLoader:
         key, value = self.parse_key_value(line)
         if key:
           properties[key] = value 
-
     self.readlines_until_empty_line(file, handler)
-    self.layers.append(Layer(properties['title'], properties['keys'])) 
+    self.layers.append(Layer(properties['title'], properties['keys'], properties['fallthrough'])) 
 
   # Returns a dictionary. The keys are virtual key numbers and the values are hardware key numbers.
   # The keyboard layout is always described by using the virtual key numbers.    

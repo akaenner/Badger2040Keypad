@@ -136,10 +136,10 @@ Each line can have a optional title part. If a title is given it is shown up on 
 
 ##### Available actions:
 
-**Codes[ &lt; Keycode &gt;, &lt; Keycode &gt;, … ]**
+**Codes[ < Keycode >, < Keycode >, … ]**
 Emits the given key codes at the same time. See **Keycodes.html** for all available key codes.  
 
-**Sequence[ &lt; Action &gt; ; &lt; Action &gt; ]**
+**Sequence[ < Action > ; < Action > ]**
 Emits the given actions one after the other. Sequences are currently not nestable and are only tested with Code actions. Note: The separator between actions inside sequences is a semicolon.
 
 **Shift**
@@ -149,13 +149,17 @@ Can be triggered by a `long_tap` and is only usefull if a `tap` action exists. I
 
 **PreviousLayout** activates the first layer of the previous layout.
 
+**SwitchLayout( < layout name > )** permanently activates the layout with the given name. 
+
 **NextLayer** activates the next layer of the active layout.
 
 **Previous Layer** activates the previous layer of the active layout.
 
-**ResetKeyboard** restarts / resets the badge. 
+**ChangeLayer( < layer name > )** temporarily activates the layer with the given name as long as the trigger (tap or hold) is active.  **Note:** the display does not show temporary layer changes because it is too slow for that. 
 
-**ChangeLayer( &lt; layer name &gt; )** temporarily activates the layer with the given name as long as the trigger (tap or hold) is active.  **Note:** the display does not show temporary layer changes because it is too slow for that. 
+**SwitchLayer( < layer name > )** permanently activates the layer with the given name. 
+
+**ResetKeyboard** restarts / resets the badge. 
 
 ## Boot behavior
 
